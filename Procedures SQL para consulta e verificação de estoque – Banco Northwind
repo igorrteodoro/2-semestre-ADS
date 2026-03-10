@@ -1,0 +1,56 @@
+use northwind;
+
+drop procedure if exists sp_listaprodfiltro;
+
+delimiter //
+
+create procedure sp_listaprodfiltro(in strlistaprod varchar(100))
+begin
+    if strlistaprod <> '0' then
+        select productid, productname, unitprice, unitsinstock
+        from products
+        where productid in (strlistaprod);
+    else
+        select productid, productname, unitprice, unitsinstock
+        from products;
+    end if;
+end //
+
+delimiter ;
+
+call sp_listaprodfiltro(0);
+
+drop procedure sp_listaProdutoEstoque;
+
+delimiter //
+create procedure sp_listaProdutoEstoque(codProd int)
+begin
+	declare qtdEstoque int; 
+    declare msgEstoque varchar(100);
+    set qtdEstoque = 0; 
+    
+    select unitsinstock into qtdEstoque
+    from products 
+    where ProductID = codProd; 
+    
+    if qtdEstoque >= 100 then 
+		set msgEstoque = concat('Estoque alto: ', qtdEstoque );
+    else 
+		if qtdEstoque >= 11 and qtdEstoque <= 99 then 
+		set msgEstoque = concat('Estoque OK: ', qtdEstoque );
+			
+        else 
+		set msgEstoque = concat('Estoque baixo: ', qtdEstoque );
+			
+        end if;
+
+     end if;
+     -- mostrar a variavel
+     select msgEstoque;
+end; 
+//
+
+
+call sp_listaProdutoEstoque (77);
+
+select * from products;
